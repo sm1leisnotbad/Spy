@@ -56,7 +56,7 @@ namespace Server
                 {
                     
                     EndConnect();
-                    MessageBox.Show(ex.ToString());
+                    MessageBox.Show(ex.Message);
                 }
             }
             
@@ -72,7 +72,7 @@ namespace Server
 
         private void ExportBtn_Click(object sender, EventArgs e)
         {
-            SaveFileDialog saveFileDialog = new SaveFileDialog();
+/*            SaveFileDialog saveFileDialog = new SaveFileDialog();
             saveFileDialog.ShowDialog();
             saveFileDialog.Filter = "Text Files|*.txt";
             if (saveFileDialog.FileName != "")
@@ -83,10 +83,7 @@ namespace Server
                 sw.WriteLine(str);
                 sw.Close();
                 fs.Close();
-            }
-
-            
-
+            }*/
         }
     }
 }

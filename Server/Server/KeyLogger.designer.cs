@@ -38,39 +38,48 @@ namespace Server
             // 
             // LogBx
             // 
-            this.LogBx.Location = new System.Drawing.Point(12, 100);
+            this.LogBx.BackColor = System.Drawing.SystemColors.ControlText;
+            this.LogBx.Font = new System.Drawing.Font("Ubuntu", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.LogBx.ForeColor = System.Drawing.SystemColors.Info;
+            this.LogBx.Location = new System.Drawing.Point(12, 92);
             this.LogBx.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.LogBx.Multiline = true;
             this.LogBx.Name = "LogBx";
             this.LogBx.ReadOnly = true;
-            this.LogBx.Size = new System.Drawing.Size(568, 290);
+            this.LogBx.Size = new System.Drawing.Size(765, 346);
             this.LogBx.TabIndex = 0;
             // 
             // ExportBtn
             // 
-            this.ExportBtn.Location = new System.Drawing.Point(628, 358);
+            this.ExportBtn.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.ExportBtn.Font = new System.Drawing.Font("Ubuntu", 13.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ExportBtn.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.ExportBtn.Location = new System.Drawing.Point(593, 30);
             this.ExportBtn.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.ExportBtn.Name = "ExportBtn";
-            this.ExportBtn.Size = new System.Drawing.Size(113, 32);
+            this.ExportBtn.Size = new System.Drawing.Size(155, 50);
             this.ExportBtn.TabIndex = 1;
-            this.ExportBtn.Text = "button1";
-            this.ExportBtn.UseVisualStyleBackColor = true;
+            this.ExportBtn.Text = "Export";
+            this.ExportBtn.UseVisualStyleBackColor = false;
+            this.ExportBtn.Click += new System.EventHandler(this.ExportBtn_Click);
             // 
             // IPBx
             // 
-            this.IPBx.Location = new System.Drawing.Point(101, 39);
+            this.IPBx.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.IPBx.Location = new System.Drawing.Point(86, 30);
             this.IPBx.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.IPBx.Name = "IPBx";
             this.IPBx.ReadOnly = true;
-            this.IPBx.Size = new System.Drawing.Size(245, 22);
+            this.IPBx.Size = new System.Drawing.Size(245, 28);
             this.IPBx.TabIndex = 2;
             // 
             // IPLabel
             // 
             this.IPLabel.AutoSize = true;
-            this.IPLabel.Location = new System.Drawing.Point(63, 45);
+            this.IPLabel.Font = new System.Drawing.Font("Ubuntu", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.IPLabel.Location = new System.Drawing.Point(54, 37);
             this.IPLabel.Name = "IPLabel";
-            this.IPLabel.Size = new System.Drawing.Size(19, 16);
+            this.IPLabel.Size = new System.Drawing.Size(26, 21);
             this.IPLabel.TabIndex = 3;
             this.IPLabel.Text = "IP";
             // 
