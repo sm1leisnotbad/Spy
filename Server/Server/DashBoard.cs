@@ -9,8 +9,8 @@ namespace Server
     {
 
         TcpListener server;
-        TcpListener klog;
-        TcpListener ShareScreen;
+        TcpListener klogServer;
+        TcpListener ShareScreenServer;
         Thread Listen;
         TcpClient client;
         TcpClient klogClient;
@@ -21,9 +21,9 @@ namespace Server
 
         public DashBoardForm()
         {
-            server = new TcpListener(IPAddress.Any, 8000);
-            klog = new TcpListener(IPAddress.Any, 8001);
-            ShareScreen = new TcpListener(IPAddress.Any, 8002);
+            server = new TcpListener(IPAddress.Any, 9000);
+            klogServer = new TcpListener(IPAddress.Any, 9001);
+            ShareScreenServer = new TcpListener(IPAddress.Any, 9002);
 
 
             CheckForIllegalCrossThreadCalls = false;
@@ -42,13 +42,13 @@ namespace Server
             try
             { 
                     server.Start();
-                    klog.Start();
-                    ShareScreen.Start();
+                    klogServer.Start();
+                    ShareScreenServer.Start();
                     while (true)
                     {
                         client = server.AcceptTcpClient();
-                        klogClient = klog.AcceptTcpClient();
-                        ShareScreenClient = ShareScreen.AcceptTcpClient();
+                        klogClient = klogServer.AcceptTcpClient();
+                        ShareScreenClient = ShareScreenServer.AcceptTcpClient();
 
                         ConnectBx.Text += "Connected to " + client.Client.RemoteEndPoint.ToString() + "\r\n";
                         Thread t = new Thread(ClientThread);
@@ -68,9 +68,9 @@ namespace Server
         void StopListen()
         {
 
-            ShareScreen.Stop();
+            ShareScreenServer.Stop();
             server.Stop();
-            klog.Stop();
+            klogServer.Stop();
             if (Listen.IsAlive)
               Listen.Abort();
         }
