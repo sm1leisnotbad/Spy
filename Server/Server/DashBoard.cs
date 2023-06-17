@@ -26,6 +26,9 @@ namespace Server
             ShareScreenServer = new TcpListener(IPAddress.Any, 9002);
 
 
+            /*server = new TcpListener(IPAddress.Any, 9003);
+            klogServer = new TcpListener(IPAddress.Any, 9004);
+            ShareScreenServer = new TcpListener(IPAddress.Any, 9005);*/
             CheckForIllegalCrossThreadCalls = false;
 
             Listen = new Thread(ListenFunc);
