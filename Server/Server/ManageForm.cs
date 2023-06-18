@@ -28,9 +28,10 @@ namespace Server
 
         private NetworkStream CommandStream;
         private NetworkStream ShareScreenStream;
-        Thread ShowThread;
 
-        
+        Thread ShowThread;
+        private static ManualResetEvent mre = new ManualResetEvent(false);
+        bool IsSharingScreen = false;
         public ManageForm(TcpClient k, TcpClient ss, TcpClient m)
         {
             klogClient = k;
@@ -55,6 +56,9 @@ namespace Server
 
             CommandStream.Write(data, 0, data.Length);
 
+
+            ShowThread = new Thread(ScreenShow);
+            ShowThread.IsBackground = true;
             InitializeComponent();
         }
 
@@ -112,13 +116,32 @@ namespace Server
         {
             try
             {
-                CommandStream = client.GetStream();
-                byte[] data = Encoding.ASCII.GetBytes("Share-Screen");
-                CommandStream.Write(data, 0, data.Length);
+                if (!IsSharingScreen)
+                {
+                    CommandStream = client.GetStream();
+                    byte[] data = Encoding.ASCII.GetBytes("Share-Screen");
+                    CommandStream.Write(data, 0, data.Length);
+                    IsSharingScreen = true;
 
-                ShowThread = new Thread(ScreenShow);
-                ShowThread.Start();
-                ShowThread.IsBackground = true;
+                    if (!ShowThread.IsAlive)
+                    {
+                        ShowThread.Start();
+                    }
+                    else mre.Set();
+
+                    share_screen.Text = "STOP SHARE";
+                    
+                }
+                else
+                {
+                    IsSharingScreen = false;
+                    CommandStream = client.GetStream();
+                    string cmd = "Stop-Share";
+                    Byte[] data = Encoding.ASCII.GetBytes(cmd);
+                    CommandStream.Write(data, 0, data.Length);
+
+                    share_screen.Text = "Share screen";
+                }
             }
             catch (Exception ex)
             {
@@ -126,32 +149,8 @@ namespace Server
 
             }
         }
-        /*                if(isShowThreadAlive == false)
-                {
-                    CommandStream = client.GetStream();
-                    byte[] data = Encoding.ASCII.GetBytes("Share-Screen");
-                    CommandStream.Write(data, 0, data.Length);
 
-                    share_screen.Text = "Stop share";
-
-                    ShowThread = new Thread(ScreenShow);
-                    ShowThread.Start();
-                    ShowThread.IsBackground = true;
-                    isShowThreadAlive = true;
-                }
-                else
-                {
-                    CommandStream = client.GetStream();
-                    byte[] data = Encoding.ASCII.GetBytes("Stop-Share-Screen");
-                    CommandStream.Write(data, 0, data.Length);
-
-                    share_screen.Text = "Share Screen";
-
-                    ShowThread.Abort();
-                    ScreenPicture.Image = null;
-                    isShowThreadAlive = false;
-                }
-        */
+        
         private void ScreenShow()
         {
 
@@ -161,6 +160,11 @@ namespace Server
 
                 while (client.Connected && Thread.CurrentThread.IsAlive)
                 {
+                    if(!IsSharingScreen)
+                    {
+                        ScreenPicture.Image = null;
+                        mre.WaitOne();
+                    }
                     ShareScreenStream = ShareScreenClient.GetStream();
                     ScreenPicture.Image = (Image)binaryFormatter.Deserialize(ShareScreenStream);
                 }

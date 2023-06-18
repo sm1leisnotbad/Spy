@@ -82,16 +82,19 @@ namespace Server
         {
             try
             {
-                Form manageForm = new ManageForm(klogClient, ShareScreenClient, client);
-                manageForm.Show();
-                Application.Run();
+                if (client.Connected && ShareScreenClient.Connected && klogClient.Connected)
+                {
+                    Form manageForm = new ManageForm(klogClient, ShareScreenClient, client);
+                    manageForm.Show();
+                    Application.Run();
+                }
             }
 
             catch (Exception e)
             {
-                MessageBox.Show("Manage Form end.");
+                MessageBox.Show("Client end connect");
                 MessageBox.Show(e.Message);
-                Application.Exit();
+                
             }
 
 
